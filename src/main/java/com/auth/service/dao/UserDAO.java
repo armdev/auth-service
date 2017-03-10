@@ -3,11 +3,14 @@ package com.auth.service.dao;
 import com.auth.service.entities.User;
 import com.google.gson.Gson;
 import com.mongodb.BasicDBObject;
+import com.mongodb.DBCursor;
+import com.mongodb.DBObject;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.result.UpdateResult;
 import com.mongodb.util.JSON;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import org.bson.Document;
 import org.bson.conversions.Bson;
@@ -37,7 +40,7 @@ public class UserDAO {
     }
 
     public User findById(String id) {
-         User entity = new User();
+        User entity = new User();
         Document query = new Document();
         query.put("id", id);
         for (Document doc : collection.find(query)) {
@@ -97,6 +100,21 @@ public class UserDAO {
         } catch (Exception e) {
         }
         return listCount;
+    }
+
+    public Optional<User> login(String email, String passwd) {
+        User entity = new User();
+        Document query = new Document();
+        query.put("email", email.trim());
+        query.put("password", passwd.trim());
+        for (Document doc : collection.find(query)) {
+            entity = gson.fromJson(doc.toJson(), User.class);
+        }
+        return Optional.of(entity);
+    }
+
+    public void remove() {
+        collection.drop();
     }
 
 }
